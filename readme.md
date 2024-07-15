@@ -1,5 +1,10 @@
 # Voors Pizzaria
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d6f170ca-e68c-46d7-bacc-b14a4f0a08be" alt="logo" width="460" />
+<p/>
+  
+
 Bem-vindo à Voors Pizzaria! Aqui você pode fazer o seu pedido de pizza de forma rápida e intuitiva.
 
 ## Como testar a aplicação
