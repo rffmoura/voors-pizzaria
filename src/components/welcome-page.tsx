@@ -45,7 +45,7 @@ export function WelcomePage({ setShowWelcomePage }: { setShowWelcomePage: (value
         onClick={startOrder}
         className="mt-4 px-6 py-2 bg-primary text-secondary rounded-md text-lg font-semibold hover:bg-primary/80 transition-all"
       >
-        Iniciar
+        Iniciar pedido
       </motion.button>
       <div className='mt-10'>
         <motion.img

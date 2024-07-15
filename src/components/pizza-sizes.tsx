@@ -1,16 +1,15 @@
 import * as Tabs from '@radix-ui/react-tabs';
-import { OrderContext } from '../context/OrderContext/order-context';
-import { useContext } from 'react';
+import useOrder from '../context/hooks/useOrder';
 
 export default function PizzaSizes() {
-  const { setSize } = useContext(OrderContext);
+  const { setSize, size } = useOrder();
 
   const handlePizzaSelection = (event: string) => {
     setSize(event)
   }
 
   return (
-    <Tabs.Root onValueChange={handlePizzaSelection} className='w-full flex justify-center flex-col items-center'>
+    <Tabs.Root value={size} onValueChange={handlePizzaSelection} className='w-full flex justify-center flex-col items-center'>
       <Tabs.List aria-label="Pizza sizes">
         <h1 data-testid="sizes-title" className="text-2xl font-bold">Selecione o tamanho da sua pizza</h1>
         <div className='flex gap-3 justify-center mt-6'>

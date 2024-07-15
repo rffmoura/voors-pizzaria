@@ -1,14 +1,17 @@
 import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
 import useOrder from '../context/hooks/useOrder';
-import creditCard from '../assets/images/credit-card.png'
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { PaymentModal } from './payment-modal';
+import clsx from 'clsx';
 
 export function Checkout() {
   const [isOpen, setIsOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement | null>(null);
 
-  const { value, timeToPrepare, flavor, adicionals } = useOrder()
+  const { value, timeToPrepare, flavor, adicionals, size, addToOrder, setStartOver, orders, calculateTotalTimeToPrepare, setIsNewOrder } = useOrder()
+
+  const totalTimeToPrepare = calculateTotalTimeToPrepare(orders)
 
   const drawerVariants = {
     open: {
@@ -51,19 +54,36 @@ export function Checkout() {
 
   const selectedAdicionals = getSelectedAdicionals();
 
+  const getPizzaSizeAbbreviation = (size: string): 'P' | 'M' | 'G' => {
+    const sizeAbbreviationMap: { [key: string]: 'P' | 'M' | 'G' } = {
+      small: 'P',
+      medium: 'M',
+      large: 'G',
+    };
+
+    return sizeAbbreviationMap[size];
+  };
+
+  const handleContinueShopping = () => {
+    setIsOpen(!isOpen)
+    setIsNewOrder(true)
+    setStartOver(true)
+  }
+
   return (
     <>
-
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, scale: 1, y: 100 }}
         transition={{ duration: 0.4 }}
         className='flex flex-col items-center mt-4 justify-center relative'
       >
-        <button onClick={() => setIsOpen(!isOpen)} className="inline-flex items-center justify-center rounded-md w-96 p-5 h-9 shadow-lg bg-primary text-secondary">
-          Finalizar pedido
+        <button disabled={orders.length === 0} onClick={() => setIsOpen(!isOpen)} className="inline-flex items-center justify-center rounded-md w-96 p-5 h-9 shadow-lg bg-primary text-secondary disabled:bg-primary/40">
+          Ir para o carrinho
         </button>
-
+        <div className="absolute top-[-10px] right-[-10px] flex items-center justify-center bg-tertiary text-secondary rounded-full h-6 w-6 text-xs">
+          {orders.length}
+        </div>
       </motion.div>
       {isOpen && <div className="fixed inset-0 z-40 bg-black bg-opacity-50" onClick={handleClickOutside}></div>}
       <motion.div
@@ -75,7 +95,7 @@ export function Checkout() {
         style={{ height: "93vh" }}
       >
 
-        <h1 className="text-2xl font-bold">Checkout</h1>
+        <h1 className="text-2xl font-bold">Carrinho</h1>
         <div className="p-4 flex flex-col items-center mt-10">
           <div className='m-2'>
             <h1 className="text-xl font-bold">Aqui está um resumo do seu pedido:</h1>
@@ -85,78 +105,69 @@ export function Checkout() {
             </div>
             <div className='flex justify-between'>
               <p>Tempo estimado de preparo:</p>
-              <p>{timeToPrepare} minutos</p>
+              <p>{Object.values(orders).length > 0 ? totalTimeToPrepare : timeToPrepare} minutos</p>
             </div>
 
             <div className='flex flex-col mt-6'>
               <h1 className='text-xl font-bold'>Detalhes do pedido:</h1>
-              <p>Pizza de {flavor}</p>
               {
-                selectedAdicionals.length > 0 && (
-                  <p>Personalização: {selectedAdicionals.join(', ')}</p>
+                orders.length > 0 ? (
+                  <>
+                    {
+                      orders.map(order => {
+                        return (
+                          <>
+                            {Object.keys(order.adicionals).length > 0 ? (
+                              <div className='flex justify-between'>
+                                <div>
+                                  <p>Pizza de {order.flavor}, <span className='font-semibold'>{getPizzaSizeAbbreviation(order.size)}</span></p>
+                                  <p className='max-w-[236px]'> - Personalização: {selectedAdicionals.join(', ')}</p>
+                                </div>
+                                <p className='flex items-center'>R$ {order.value.toFixed(2)}</p>
+                              </div>
+                            ) : (
+                              <div className='flex justify-between'>
+                                <p>Pizza de {order.flavor}, <span className='font-semibold'>{getPizzaSizeAbbreviation(order.size)}</span></p>
+                                <p>R$ {order.value.toFixed(2)}</p>
+                              </div>
+
+                            )}
+                          </>
+                        )
+                      })
+                    }
+                  </>
+                ) : (
+                  <>
+                    <p>Pizza de {flavor}, <span className='font-semibold'>{getPizzaSizeAbbreviation(size)}</span></p>
+                    {
+                      selectedAdicionals.length > 0 && (
+                        <p>Personalização: {selectedAdicionals.join(', ')}</p>
+                      )
+                    }
+                  </>
                 )
               }
             </div>
           </div>
-
-          <div className='w-full flex flex-col m-5 items-center mt-10'>
-            <h2 className="text-xl font-bold">Formas de pagamento:</h2>
-            <div className='flex'>
-              <div className='flex flex-col items-center w-32 md:w-52'>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                >
-                  <div className='w-24  flex flex-col items-center cursor-pointer transition-all' >
-                    <img src={creditCard} />
-                  </div>
-                </motion.button>
-                <p>Cartão de crédito</p>
-              </div>
-
-              <div className='flex flex-col items-center w-32 md:w-52'>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                >
-                  <div className='w-24  flex flex-col items-center cursor-pointer transition-all' >
-                    <img src={creditCard} />
-                  </div>
-                </motion.button>
-                <p>Pix</p>
-              </div>
-
-              <div className='flex flex-col items-center w-32 md:w-52'>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                >
-                  <div className='w-24  flex flex-col items-center cursor-pointer transition-all' >
-                    <img src={creditCard} />
-                  </div>
-                </motion.button>
-                <p>Carteira digital</p>
-              </div>
-
-            </div>
-          </div>
         </div>
+        <div className='flex flex-col'>
 
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center justify-center rounded-md w-96 p-5 h-9 shadow-lg bg-primary text-secondary md:mt-10"
-        >
-          Finalizar pedido
-        </button>
+          <button
+            onClick={() => handleContinueShopping()}
+            className="inline-flex items-center justify-center rounded-md w-96 p-5 h-9 shadow-lg bg-primary text-secondary md:mt-10"
+          >
+            Continuar comprando
+          </button>
+
+          <PaymentModal setIsOpen={setIsOpen} />
+
+        </div>
 
         <div onClick={() => setIsOpen(!isOpen)} className="absolute top-0 right-0 m-6 cursor-pointer">
           <Cross2Icon className='size-5' />
         </div>
       </motion.div>
-
 
     </>
   );

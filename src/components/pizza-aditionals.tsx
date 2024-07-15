@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { motion } from "framer-motion"
@@ -5,12 +6,11 @@ import bacon from '../assets/images/bacon.png'
 import noOnion from '../assets/images/no-onion.png'
 import border from '../assets/images/border.png'
 import * as Switch from '@radix-ui/react-switch';
-import { useContext, useState } from 'react';
-import { OrderContext } from '../context/OrderContext/order-context';
 import { toast } from 'sonner';
+import useOrder from '../context/hooks/useOrder';
 
 export function PizzaAdicionals() {
-  const { setAdicionals } = useContext(OrderContext);
+  const { setAdicionals } = useOrder();
 
   const [switchStates, setSwitchStates] = useState<{
     [key: string]: boolean;
@@ -30,8 +30,8 @@ export function PizzaAdicionals() {
   };
 
   const handleSubmit = (event: any) => {
-    toast.success('Pedido atualizado com sucesso!');
     event.preventDefault();
+    toast.success('Pedido atualizado com sucesso!');
     setAdicionals(switchStates);
   };
 
@@ -40,7 +40,7 @@ export function PizzaAdicionals() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, scale: 1, y: 80 }}
       transition={{ duration: 0.3 }}
-      className='flex flex-col items-center mt-10 justify-center'
+      className='flex flex-col items-center mt-6 justify-center'
     >
       <Dialog.Root>
         <Dialog.Trigger asChild>
@@ -54,7 +54,7 @@ export function PizzaAdicionals() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}>
-            <Dialog.Content className='fixed overflow-hidden inset-0  left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] w-[80%] md:h-[60vh] h-[70vh] bg-secondary rounded-md flex flex-col justify-center outline-none'>
+            <Dialog.Content className='fixed overflow-hidden inset-0  left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] w-[80%] md:h-[70vh] h-[60vh] bg-secondary rounded-md flex flex-col justify-center outline-none'>
               <form onSubmit={handleSubmit}>
                 <div className='md:px-7 px-4 flex justify-between items-center'>
                   <div className='flex items-center gap-5'>

@@ -1,13 +1,13 @@
 import * as Tabs from '@radix-ui/react-tabs';
-import { OrderContext } from '../context/OrderContext/order-context';
-import { useContext } from 'react';
 import calabresa from '../assets/images/calabresa.png';
 import marguerita from '../assets/images/marguerita.png';
 import portuguesa from '../assets/images/portuguesa.png';
 import { motion } from "framer-motion"
+import useOrder from '../context/hooks/useOrder';
+import clsx from 'clsx';
 
 export function PizzaFlavors() {
-  const { setFlavor, flavor } = useContext(OrderContext);
+  const { setFlavor, flavor } = useOrder();
 
   const handlePizzaSelection = (event: string) => {
     setFlavor(event)
@@ -27,45 +27,40 @@ export function PizzaFlavors() {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                animate={{ scale: flavor === "calabresa" ? 1.2 : 1 }}
+                animate={{ scale: flavor === "calabresa" ? 1.3 : 1 }}
               >
                 <Tabs.Trigger data-testid="flavors-button" className='w-24 md:w-48 flex flex-col items-center cursor-pointer transition-all' value="calabresa">
                   <img src={calabresa} />
                 </Tabs.Trigger>
               </motion.button>
-              <p data-testid="flavors-calabresa" className='text-lg font-semibold text-tertiary'>Calabresa</p>
+              <p data-testid="flavors-calabresa" className={clsx('text-lg font-semibold text-tertiary', flavor === 'calabresa' && 'bg-primary text-white transition-all px-2 rounded-md')}>Calabresa</p>
             </div>
             <div className='flex flex-col items-center w-32 md:w-52'>
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                animate={{ scale: flavor === "marguerita" ? 1.2 : 1 }}
+                animate={{ scale: flavor === "marguerita" ? 1.3 : 1 }}
               >
                 <Tabs.Trigger className='w-24 md:w-48 flex flex-col items-center cursor-pointer transition-all' value="marguerita">
                   <img src={marguerita} />
                 </Tabs.Trigger>
               </motion.button>
-              <p data-testid="flavors-marguerita" className='text-lg font-semibold text-tertiary'>Marguerita</p>
+              <p data-testid="flavors-marguerita" className={clsx('text-lg font-semibold text-tertiary', flavor === 'marguerita' && 'bg-primary text-white transition-all px-2 rounded-md')}>Marguerita</p>
             </div>
             <div className='flex flex-col items-center w-32 md:w-52'>
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                animate={{ scale: flavor === "portuguesa" ? 1.2 : 1 }}
+                animate={{ scale: flavor === "portuguesa" ? 1.3 : 1 }}
               >
-                <Tabs.Trigger className='w-24 md:w-48 flex flex-col items-center cursor-pointer transition-all' value="portuguesa">
+                <Tabs.Trigger className='w-24 md:w-48 flex flex-col items-center cursor-pointer transition-all data-[state=active]:' value="portuguesa">
                   <img src={portuguesa} />
                 </Tabs.Trigger>
               </motion.button>
-              <p data-testid="flavors-portuguesa" className='text-lg font-semibold text-tertiary'>Portuguesa</p>
+              <p data-testid="flavors-portuguesa" className={clsx('text-lg font-semibold text-tertiary', flavor === 'portuguesa' && 'bg-primary text-white transition-all px-2 rounded-md')}>Portuguesa</p>
             </div>
           </div>
         </Tabs.List>
-        {/* <div className='mt-6'>
-        <Tabs.Content value="calabresa" className='text-center'>Calabresa</Tabs.Content>
-        <Tabs.Content value="marguerita" className='text-center'>Marguerita</Tabs.Content>
-        <Tabs.Content value="portuguesa" className='text-center'>Portuguesa</Tabs.Content>
-      </div> */}
       </Tabs.Root>
     </motion.div>
   )
